@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>DustChat</title>
+    <link rel="stylesheet" href="/res/css/style.css">
+</head>
+
+<body>
+    <div id="dc_loading_overlay">
+        <span id="dc_loading_circle"></span>
+    </div>
+
+    <div id="dc_content_overlay" hidden>
+        <h1>DustChat</h1>
+        <hr>
+        <p>Welcome!</p>
+
+        <button id="dc_create_account_action_btn">&#10133; Create Account</button>
+        <button id="dc_login_action_btn">&#128373; Login</button>
+        <button id="dc_create_chat_action_btn">&#9997; Create Chat Room</button>
+        <button id="dc_join_chat_action_btn">&#8986; Join Chat Room</button>
+
+        <!-- TODO: Validation -->
+        <div id="dc_create_account_form_container">
+            <h2>Create Account</h2>
+            <form id="dc_create_account_form" name="dc_create_account_form">
+                <label>Username</label>
+                <input autocomplete="username" type="text" name="dc_create_account_username"
+                    id="dc_create_account_username"><br><br>
+                <label>Password</label>
+                <input autocomplete="new-password" type="password" name="dc_create_account_password"
+                    id="dc_create_account_password"><br><br>
+                <input type="submit" value="Create">
+            </form>
+        </div>
+
+    </div>
+
+    <script src="/res/js/script.js"></script>
+</body>
+
+</html>
