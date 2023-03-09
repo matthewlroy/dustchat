@@ -1,10 +1,10 @@
 //#region CONSTANTS
-const dc_DEFAULT_FETCH_TIMEOUT = {
+const DEFAULT_FETCH_TIMEOUT = {
   MILLISECONDS: 8000,
   SECONDS: 8,
 };
 
-const dc_ENDPOINTS_FILE = `/endpoints.json`;
+const ENDPOINTS_FILE = `/endpoints.json`;
 //#endregion
 
 //#region GLOBAL HELPERS
@@ -16,32 +16,32 @@ window.addEventListener(`DOMContentLoaded`, async (event) => {
   const start = performance.now();
 
   // // Load in the endpoints required API endpoints for the application
-  // api_endpoints = await dc_get_api_endpoints_json()
+  // api_endpoints = await get_api_endpoints_json()
   //   .then((jsonResponse) => jsonResponse)
   //   .catch(() => { return {}; });
 
   // // Check we properly loaded in those endpoints
   // if (api_endpoints && Object.keys(api_endpoints).length === 0 &&
   //   Object.getPrototypeOf(api_endpoints) === Object.prototype) {
-  //   dc_show_error_in_body(`Unable to obtain API endpoints.`);
+  //   show_error_in_body(`Unable to obtain API endpoints.`);
   //   return;
   // }
 
   // // Health check against our server prior to any further ops
-  // if (!await dc_get_server_online_status()) {
-  //   dc_show_error_in_body(`Could not connect to server.`);
+  // if (!await get_server_online_status()) {
+  //   show_error_in_body(`Could not connect to server.`);
   //   return;
   // }
 
   // // Set necessary event listeners
-  // // document.getElementById(`dc_create_account_action_btn`)
+  // // document.getElementById(`create_account_action_btn`)
   // //   .addEventListener(`click`, (e) => {
   // //     e.preventDefault();
-  // //     document.getElementById(`dc_create_account_form_container`).hidden = false;
+  // //     document.getElementById(`create_account_form_container`).hidden = false;
   // //   });
 
-  // const dc_create_account_form = document.getElementById(`dc_create_account_form`);
-  // dc_create_account_form.addEventListener(`submit`, async (e) => {
+  // const create_account_form = document.getElementById(`create_account_form`);
+  // create_account_form.addEventListener(`submit`, async (e) => {
   //   e.preventDefault();
 
   //   const create_account_form_data = new FormData(e.target);
@@ -52,7 +52,7 @@ window.addEventListener(`DOMContentLoaded`, async (event) => {
   //   // TODO: Validation
 
   //   try {
-  //     const response = await dc_fetch_wrapper(
+  //     const response = await fetch_wrapper(
   //       api_endpoints.CREATE_ACCOUNT,
   //       {
   //         method: `POST`,
@@ -72,8 +72,8 @@ window.addEventListener(`DOMContentLoaded`, async (event) => {
   // });
 
   // Hide loaders and show content
-  document.getElementById(`dc_loading_overlay`).hidden = true;
-  document.getElementById(`dc_content_overlay`).hidden = false;
+  document.getElementById(`loading_overlay`).hidden = true;
+  document.getElementById(`content_overlay`).hidden = false;
 
   const end = performance.now();
   console.log(`[script.js] >> ${event.type} <<\n\tExecution time: ${Math.round(end - start)}ms`);
@@ -85,8 +85,8 @@ window.addEventListener(`DOMContentLoaded`, async (event) => {
 // exceeds the timeout, returns an error of type: AbortError. Otherwise, returns
 // a standard fetch response object.
 // Source: https://dmitripavlutin.com/timeout-fetch-request/
-async function dc_fetch_wrapper(resource, options = {}) {
-  const { timeout = dc_DEFAULT_FETCH_TIMEOUT.MILLISECONDS } = options;
+async function fetch_wrapper(resource, options = {}) {
+  const { timeout = DEFAULT_FETCH_TIMEOUT.MILLISECONDS } = options;
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeout);
 
@@ -100,9 +100,9 @@ async function dc_fetch_wrapper(resource, options = {}) {
   return response;
 }
 
-async function dc_get_server_online_status() {
+async function get_server_online_status() {
   try {
-    const response = await dc_fetch_wrapper(
+    const response = await fetch_wrapper(
       api_endpoints.HEALTH_CHECK,
       {
         method: `GET`,
@@ -120,10 +120,10 @@ async function dc_get_server_online_status() {
   }
 }
 
-async function dc_get_api_endpoints_json() {
+async function get_api_endpoints_json() {
   try {
-    const response = await dc_fetch_wrapper(
-      dc_ENDPOINTS_FILE,
+    const response = await fetch_wrapper(
+      ENDPOINTS_FILE,
       {
         method: `GET`,
         mode: `same-origin`,
@@ -140,7 +140,7 @@ async function dc_get_api_endpoints_json() {
   }
 }
 
-async function dc_show_error_in_body(errorMsg) {
+async function show_error_in_body(errorMsg) {
   console.error(errorMsg);
   document.body.innerHTML = errorMsg;
 }
