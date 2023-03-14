@@ -33,6 +33,9 @@ window.addEventListener(`DOMContentLoaded`, async (event) => {
     throw new Error(error);
   }
 
+  // Establish event listeners on necessary DOM elements
+  activate_create_account_form();
+
   // Hide loaders and show content
   document.getElementById(`loading_overlay`).hidden = true;
   document.getElementById(`content_overlay`).hidden = false;
@@ -84,9 +87,45 @@ async function get_api_endpoints_json() {
     return {};
   }
 }
+
+async function post_create_user(stringified_json_data) {
+  try {
+    const response = await fetch_wrapper(
+      API_ENDPOINTS.create_user,
+      {
+        method: `POST`,
+        mode: `same-origin`,
+        cache: `reload`,
+        credentials: `same-origin`,
+        referrerPolicy: `no-referrer`,
+        headers: {
+          "Content-Type": `application/json`,
+        },
+        body: stringified_json_data,
+      },
+    );
+
+    console.log(response);
+  } catch (error) {
+    console.error(error);
+  }
+}
 //#endregion
 
 //#region HELPER FUNCTIONS
+function activate_create_account_form() {
+  const form = document.getElementById(`create_account_form`);
+  form.addEventListener(`submit`, async (event) => {
+    event.preventDefault();
+
+    let data = {};
+    const formData = new FormData(form);
+    formData.forEach((value, key) => data[key] = value);
+    let json = JSON.stringify(data);
+    await post_create_user(json);
+  });
+}
+
 // Performs a fetch request with a timeout abort controller. If a fetch request
 // exceeds the timeout, returns an error of type: AbortError. Otherwise, returns
 // a standard fetch response object.
