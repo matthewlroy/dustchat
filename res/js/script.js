@@ -159,11 +159,13 @@ function activate_create_account_form() {
       return;
     }
 
-    // Sanitize the data and prep it for the server-side
-    console.log("TODO: sanitize");
+    // Sanitize the data and prep it for the server-side post
+    let sanitized_obj = {};
+    sanitized_obj.email = email.trim().toLowerCase();
+    sanitized_obj.password = password;
+    sanitized_obj = JSON.stringify(sanitized_obj);
 
-    // let json = JSON.stringify(data);
-    // await post_create_user(json);
+    await post_create_user(sanitized_obj);
   });
 }
 
