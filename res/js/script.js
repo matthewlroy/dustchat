@@ -150,8 +150,11 @@ function activate_create_account_form() {
       password_input.setAttribute(`aria-invalid`, `true`);
     }
 
-    if (email_input.getAttribute(`aria-invalid`) == `true` ||
-      password_input.getAttribute(`aria-invalid`) == `true`) {
+    if (email_input.getAttribute(`aria-invalid`) == `true`) {
+      email_input.focus();
+      return;
+    } else if (password_input.getAttribute(`aria-invalid`) == `true`) {
+      password_input.focus();
       return;
     }
 
