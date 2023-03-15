@@ -25,7 +25,7 @@ input {
     outline: 2px solid red;
 }
 
-[aria-invalid="true"]~.form_error_message {
+[aria-invalid="true"]+.form_error_message {
     visibility: visible;
 }
 
