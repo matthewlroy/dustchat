@@ -119,6 +119,7 @@ function activate_create_account_form() {
   const form = document.getElementById(`create_account_form`);
   const email_input = document.getElementById(`email`);
   const password_input = document.getElementById(`password`);
+  const submit_btn = document.getElementById(`create_account_submit_btn`);
 
   form.addEventListener(`submit`, async (event) => {
     // Supress default form behavior + clear errors
@@ -158,6 +159,13 @@ function activate_create_account_form() {
       password_input.focus();
       return;
     }
+
+    // Disable the form while performing the below ops (prevent multiple clicks)
+    submit_btn.setAttribute(`disabled`, `true`);
+    email_input.setAttribute(`disabled`, `true`);
+    password_input.setAttribute(`disabled`, `true`);
+    submit_btn.value = `Creating . . .`;
+    submit_btn.ariaLabel = `Creating account`;
 
     // Sanitize the data and prep it for the server-side post
     let sanitized_obj = {};
