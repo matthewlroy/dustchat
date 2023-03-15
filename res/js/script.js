@@ -3,6 +3,8 @@ const DEFAULT_FETCH_TIMEOUT = {
   MILLISECONDS: 8000,
   SECONDS: 8,
 };
+
+const FIELD_MAX_LENGTH = 255;
 //#endregion
 
 //#region GLOBAL HELPERS
@@ -139,13 +141,13 @@ function activate_create_account_form() {
 
     // EMAIL validation (simple check for the @ sign existing)
     const email = data.email;
-    if (!email || email.indexOf(`@`) == -1) {
+    if (!email || email.indexOf(`@`) == -1 || email.length > FIELD_MAX_LENGTH) {
       email_input.setAttribute(`aria-invalid`, `true`);
     }
 
     // PASSWORD validation (at least 8 characters in the password)
     const password = data.password;
-    if (!password || password.length < 8) {
+    if (!password || password.length < 8 || password.length > FIELD_MAX_LENGTH) {
       password_input.setAttribute(`aria-invalid`, `true`);
     }
 
