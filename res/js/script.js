@@ -113,15 +113,14 @@ async function post_create_user(stringified_json_data) {
 
 //#region HELPER FUNCTIONS
 function activate_create_account_form() {
+  // Get form DOM elements
   const form = document.getElementById(`create_account_form`);
+  const email_input = document.getElementById(`email`);
+  const password_input = document.getElementById(`password`);
 
   form.addEventListener(`submit`, async (event) => {
+    // Supress default form behavior + clear errors
     event.preventDefault();
-
-    // Get form DOM elements and clear errors
-    const email_input = document.getElementById(`email`);
-    const password_input = document.getElementById(`password`);
-
     email_input.setAttribute(`aria-invalid`, `false`);
     password_input.setAttribute(`aria-invalid`, `false`);
 
