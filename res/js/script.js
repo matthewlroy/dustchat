@@ -19,8 +19,7 @@ window.addEventListener(`DOMContentLoaded`, async (event) => {
     .catch(() => { return {}; });
 
   // Check we properly loaded in those endpoints
-  if (API_ENDPOINTS && Object.keys(API_ENDPOINTS).length === 0 &&
-    Object.getPrototypeOf(API_ENDPOINTS) === Object.prototype) {
+  if (is_empty(API_ENDPOINTS)) {
     const error = `Unable to obtain API endpoints.`;
     show_error_in_body(error);
     throw new Error(error);
@@ -115,14 +114,52 @@ async function post_create_user(stringified_json_data) {
 //#region HELPER FUNCTIONS
 function activate_create_account_form() {
   const form = document.getElementById(`create_account_form`);
+
   form.addEventListener(`submit`, async (event) => {
     event.preventDefault();
 
+    // Get form DOM elements and clear errors
+    const email_input = document.getElementById(`email`);
+    const password_input = document.getElementById(`password`);
+
+    email_input.setAttribute(`aria-invalid`, `false`);
+    password_input.setAttribute(`aria-invalid`, `false`);
+
+    // Grab the submitted data
     let data = {};
     const formData = new FormData(form);
     formData.forEach((value, key) => data[key] = value);
-    let json = JSON.stringify(data);
-    await post_create_user(json);
+
+    // Validate (client-side) against the submitted data
+    // DATA object validation (ensuring no null data got in here somehow)
+    if (is_empty(data) || data == null) {
+      email_input.setAttribute(`aria-invalid`, `true`);
+      password_input.setAttribute(`aria-invalid`, `true`);
+      return;
+    }
+
+    // EMAIL validation (simple check for the @ sign existing)
+    const email = data.email;
+    if (!email || email.indexOf(`@`) == -1) {
+      email_input.setAttribute(`aria-invalid`, `true`);
+    }
+
+    // PASSWORD validation (at least 8 characters in the password)
+    const password = data.password;
+    if (!password || password.length < 8) {
+      password_input.setAttribute(`aria-invalid`, `true`);
+    }
+
+    if (email_input.getAttribute(`aria-invalid`) == `true` ||
+      password_input.getAttribute(`aria-invalid`) == `true`) {
+      return;
+    }
+
+    // Sanitize the data and prep it for the server-side
+    console.log("TODO: sanitize");
+
+    // let json = JSON.stringify(data);
+    // await post_create_user(json);
   });
 }
 
@@ -150,5 +187,10 @@ async function show_error_in_body(errorMsg) {
     <p>Something went wrong, please try again later.</p>
     <p>Error: ${errorMsg ? `[${errorMsg}]` : "[]"}</p>
   `;
+}
+
+function is_empty(obj) {
+  return obj && Object.keys(obj).length === 0 &&
+    Object.getPrototypeOf(obj) === Object.prototype;
 }
 //#endregion

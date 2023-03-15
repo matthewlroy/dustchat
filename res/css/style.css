@@ -16,6 +16,19 @@ input {
     margin-inline-end: 0px;
 }
 
+.form_error_message {
+    visibility: hidden;
+    color: red;
+}
+
+[aria-invalid="true"] {
+    outline: 2px solid red;
+}
+
+[aria-invalid="true"]~.form_error_message {
+    visibility: visible;
+}
+
 #loading_overlay {
     height: 100%;
     width: 100%;
