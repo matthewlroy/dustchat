@@ -5,6 +5,8 @@ const DEFAULT_FETCH_TIMEOUT = {
 };
 
 const FIELD_MAX_LENGTH = 255;
+
+const FORM_SPAM_DELAY_SEC = 1;
 //#endregion
 
 //#region GLOBAL HELPERS
@@ -89,7 +91,11 @@ async function get_api_endpoints_json() {
   }
 }
 
-async function post_create_user(stringified_json_data) {
+async function post_create_user(
+  stringified_json_data,
+  form_dom_elm,
+  initial_submit_btn_txt,
+  initial_submit_btn_aria_label) {
   try {
     const response = await fetch_wrapper(
       API_ENDPOINTS.create_user,
@@ -106,66 +112,79 @@ async function post_create_user(stringified_json_data) {
       },
     );
 
-    console.log(response);
+    if (response.ok) {
+      // TODO: Finish the OKAY response + redirect
+      console.log("200! Posted successfully!");
+    } else {
+      // Our API is guaranteed to return JSON on error, display to console
+      const response_json = await response.json();
+      console.error(response_json.error_message);
+
+      // Show the invalid field + re-enable form
+      toggle_invalid_on_single_input(true, document.getElementById(response_json.error_field));
+      enable_form_no_delay(form_dom_elm, initial_submit_btn_txt, initial_submit_btn_aria_label);
+      focus_on_first_invalid_input_in_form(form_dom_elm);
+    }
   } catch (error) {
     console.error(error);
+
+    // Unknown error, re-enable form
+    toggle_invalid_on_single_input(true, form_dom_elm.querySelector(`input[type="hidden"]`));
+    enable_form_no_delay(form_dom_elm, initial_submit_btn_txt, initial_submit_btn_aria_label);
+    focus_on_first_invalid_input_in_form(form_dom_elm);
   }
 }
 //#endregion
 
-//#region HELPER FUNCTIONS
+//#region FORM SUBMISSION LISTENERS
 function activate_create_account_form() {
-  // Get form DOM elements
-  const form = document.getElementById(`create_account_form`);
-  const email_input = document.getElementById(`email`);
-  const password_input = document.getElementById(`password`);
-  const submit_btn = document.getElementById(`create_account_submit_btn`);
+  const form_dom_elm = document.getElementById(`create_account_form`);
 
-  form.addEventListener(`submit`, async (event) => {
-    // Supress default form behavior + clear errors
+  // Form elements
+  const email_input = form_dom_elm.querySelector(`input[type="email"]`);
+  const password_input = form_dom_elm.querySelector(`input[type="password"]`);
+  const submit_btn = form_dom_elm.querySelector(`input[type="submit"]`);
+  const hidden_server_err_input = form_dom_elm.querySelector(`input[type="hidden"]`);
+
+  form_dom_elm.addEventListener(`submit`, async (event) => {
+    // Supress default behavior and clear errors
     event.preventDefault();
-    email_input.setAttribute(`aria-invalid`, `false`);
-    password_input.setAttribute(`aria-invalid`, `false`);
+    clear_invalid_on_all_form_inputs(form_dom_elm);
 
-    // Grab the submitted data
+    // Grab the submitted data (needs to happen b4 disable or else null form data)
     let data = {};
-    const formData = new FormData(form);
+    const formData = new FormData(form_dom_elm);
     formData.forEach((value, key) => data[key] = value);
+
+    // Disable form w/ submission delay ! ! ! prevent spam :)
+    const initial_submit_btn_txt = submit_btn.value;
+    const initial_submit_btn_aria_label = submit_btn.ariaLabel;
+    await disable_form_with_delay(form_dom_elm, `Creating . . .`, `Creating account`);
 
     // Validate (client-side) against the submitted data
     // DATA object validation (ensuring no null data got in here somehow)
     if (is_empty(data) || data == null) {
-      email_input.setAttribute(`aria-invalid`, `true`);
-      password_input.setAttribute(`aria-invalid`, `true`);
-      return;
+      toggle_invalid_on_single_input(true, hidden_server_err_input);
     }
 
     // EMAIL validation (simple check for the @ sign existing)
     const email = data.email;
     if (!email || email.indexOf(`@`) == -1 || email.length > FIELD_MAX_LENGTH) {
-      email_input.setAttribute(`aria-invalid`, `true`);
+      toggle_invalid_on_single_input(true, email_input);
     }
 
     // PASSWORD validation (at least 8 characters in the password)
     const password = data.password;
     if (!password || password.length < 8 || password.length > FIELD_MAX_LENGTH) {
-      password_input.setAttribute(`aria-invalid`, `true`);
+      toggle_invalid_on_single_input(true, password_input);
     }
 
-    if (email_input.getAttribute(`aria-invalid`) == `true`) {
-      email_input.focus();
-      return;
-    } else if (password_input.getAttribute(`aria-invalid`) == `true`) {
-      password_input.focus();
+    // Exit out at this point, if anything is invalid
+    if (is_any_input_invalid_in_form(form_dom_elm)) {
+      enable_form_no_delay(form_dom_elm, initial_submit_btn_txt, initial_submit_btn_aria_label);
+      focus_on_first_invalid_input_in_form(form_dom_elm);
       return;
     }
-
-    // Disable the form while performing the below ops (prevent multiple clicks)
-    submit_btn.setAttribute(`disabled`, `true`);
-    email_input.setAttribute(`disabled`, `true`);
-    password_input.setAttribute(`disabled`, `true`);
-    submit_btn.value = `Creating . . .`;
-    submit_btn.ariaLabel = `Creating account`;
 
     // Sanitize the data and prep it for the server-side post
     let sanitized_obj = {};
@@ -173,8 +192,18 @@ function activate_create_account_form() {
     sanitized_obj.password = password;
     sanitized_obj = JSON.stringify(sanitized_obj);
 
-    await post_create_user(sanitized_obj);
+    await post_create_user(
+      sanitized_obj,
+      form_dom_elm,
+      initial_submit_btn_txt,
+      initial_submit_btn_aria_label);
   });
+}
+//#endregion
+
+//#region HELPER FUNCTIONS
+async function resolve_after_n_seconds(seconds) {
+  return new Promise(resolve => setTimeout(resolve, seconds * 1000));
 }
 
 // Performs a fetch request with a timeout abort controller. If a fetch request
@@ -206,5 +235,57 @@ async function show_error_in_body(errorMsg) {
 function is_empty(obj) {
   return obj && Object.keys(obj).length === 0 &&
     Object.getPrototypeOf(obj) === Object.prototype;
+}
+//#endregion
+
+//#region FORM HELPER FUNCS
+function focus_on_first_invalid_input_in_form(form_dom_elm) {
+  const invalid_elms = form_dom_elm.querySelectorAll(`input[aria-invalid="true"]`);
+  invalid_elms[0].focus();
+}
+
+function is_any_input_invalid_in_form(form_dom_elm) {
+  const invalid_elms = form_dom_elm.querySelectorAll(`input[aria-invalid="true"]`);
+  return invalid_elms.length > 0;
+}
+
+async function disable_form_with_delay(
+  form_dom_elm,
+  submit_btn_new_txt,
+  submit_btn_new_aria_label) {
+  toggle_disable_on_all_form_inputs(true, form_dom_elm);
+
+  const submit_btn = form_dom_elm.querySelector(`input[type="submit"]`);
+  submit_btn.value = submit_btn_new_txt;
+  submit_btn.ariaLabel = submit_btn_new_aria_label;
+
+  await resolve_after_n_seconds(FORM_SPAM_DELAY_SEC);
+}
+
+function enable_form_no_delay(
+  form_dom_elm,
+  submit_btn_new_txt,
+  submit_btn_new_aria_label) {
+  toggle_disable_on_all_form_inputs(false, form_dom_elm);
+
+  const submit_btn = form_dom_elm.querySelector(`input[type="submit"]`);
+  submit_btn.value = submit_btn_new_txt;
+  submit_btn.ariaLabel = submit_btn_new_aria_label;
+}
+
+function clear_invalid_on_all_form_inputs(form_dom_elm) {
+  form_dom_elm.querySelectorAll(`input`).forEach(inputElm =>
+    toggle_invalid_on_single_input(false, inputElm)
+  );
+}
+
+function toggle_invalid_on_single_input(invalid_bool, input_dom_elm) {
+  input_dom_elm.setAttribute(`aria-invalid`, `${invalid_bool}`);
+}
+
+function toggle_disable_on_all_form_inputs(disable_bool, form_dom_elm) {
+  form_dom_elm.querySelectorAll(`input`).forEach(inputElm =>
+    disable_bool ? inputElm.setAttribute(`disabled`, `true`) : inputElm.removeAttribute(`disabled`)
+  );
 }
 //#endregion
