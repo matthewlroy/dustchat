@@ -62,6 +62,10 @@ async function get_server_online_status() {
       },
     );
 
+    // TODO: Error handling w/ error message JSON
+    // const response_json = await response.json();
+    // console.error(response_json.error_message);
+
     return response.ok;
   } catch (error) {
     console.error(error);
