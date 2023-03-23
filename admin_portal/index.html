@@ -3,12 +3,48 @@
 
 <head>
     <title>Admin Portal | DustChat</title>
+
+    <style>
+        .column {
+            float: left;
+            width: 50%;
+        }
+
+        /* Clear floats after the columns */
+        .row:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+    </style>
 </head>
 
 <body>
     <h1>Admin Portal</h1>
-    <h2>Server Log</h2>
-    <iframe src="server.txt" title="description"></iframe>
+
+    <div id="log_container" class="row">
+        <h2>server.log | db.log</h2>
+        <div id="server_log" class="column"></div>
+        <div id="db_log" class="column"></div>
+    </div>
 </body>
+
+<script>
+    window.addEventListener(`DOMContentLoaded`, async (event) => {
+        console.log("hello world!");
+
+        fetch("server.log").then(response => response.text()).then(responseText => {
+            const server_log_dom_elm = document.getElementById(`server_log`);
+            server_log_dom_elm.innerText = ``;
+            server_log_dom_elm.innerText += responseText;
+        });
+
+        fetch("db.log").then(response => response.text()).then(responseText => {
+            const db_log_dom_elm = document.getElementById(`db_log`);
+            db_log_dom_elm.innerText = ``;
+            db_log_dom_elm.innerText += responseText;
+        });
+    });
+</script>
 
 </html>

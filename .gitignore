@@ -1,2 +1,5 @@
 # Generated endpoints file
 endpoints_v1.json
+
+# Logging files
+admin_portal/*.log
