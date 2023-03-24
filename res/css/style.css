@@ -5,6 +5,7 @@
 }
 
 body {
+    overflow-y: scroll;
     font-family: var(--font-families);
 }
 

@@ -2,4 +2,4 @@
 endpoints_v1.json
 
 # Logging files
-admin_portal/*.log
+*.log
