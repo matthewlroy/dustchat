@@ -18,9 +18,12 @@
 
         <div role="region" aria-labelledby="admin_actions_region_heading">
             <h2 id="admin_actions_region_heading">Admin Actions</h2>
+
+            <button role="button" aria-expanded="false">Create Account</button>
+            <button role="button" aria-expanded="false">Logs</button>
         </div>
 
-        <div role="region" aria-labelledby="create_account_region_heading">
+        <div role="region" d_region_hidden="true" aria-hidden="true" aria-labelledby="create_account_region_heading">
             <h3 id="create_account_region_heading">Create Account</h3>
             <form id="create_account_form">
                 <input id="email" autocomplete="email" name="email" aria-required="true" placeholder="Email *"
@@ -45,7 +48,7 @@
             </form>
         </div>
 
-        <div role="region" aria-labelledby="logging_region_heading">
+        <div role="region" d_region_hidden="true" aria-hidden="true" aria-labelledby="logging_region_heading">
             <h3 id="logging_region_heading">Logging</h3>
             <div id="log_container">
                 <div id="server_log"></div>

@@ -22,6 +22,10 @@ input {
     color: red;
 }
 
+[d_region_hidden="true"] {
+    visibility: hidden;
+}
+
 [aria-invalid="true"] {
     outline: 2px solid red;
 }
