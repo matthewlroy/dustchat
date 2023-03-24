@@ -5,6 +5,10 @@
     <title>Admin Portal | DustChat</title>
 
     <style>
+        body {
+            overflow-y: scroll;
+        }
+
         table {
             font-family: Arial, Helvetica, sans-serif;
             border-collapse: collapse;
@@ -32,6 +36,39 @@
             background-color: rgba(170, 0, 0, 1.0);
             color: white;
         }
+
+        .collapsible {
+            background-color: rgba(170, 0, 0, 1.0);
+            color: white;
+            cursor: pointer;
+            padding: 18px;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .collapsible~div {
+            padding: 5px;
+            display: none;
+            overflow: hidden;
+        }
+
+        .collapsible:after {
+            /* Unicode character for "plus" sign (+) */
+            content: '\02795';
+            font-size: 13px;
+            background-color: white;
+            float: right;
+            margin-left: 5px;
+        }
+
+        .active:after {
+            /* Unicode character for "minus" sign (-) */
+            content: "\2796";
+        }
     </style>
 </head>
 
@@ -39,8 +76,13 @@
     <h1>Admin Portal</h1>
 
     <div id="log_container">
-        <h2>server.log</h2>
+        <button type="button" class="collapsible">server.log</button>
         <div id="server_log"></div>
+
+        <hr>
+
+        <button type="button" class="collapsible">db.log</button>
+        <div id="db_log"></div>
     </div>
 </body>
 
@@ -48,14 +90,26 @@
     window.addEventListener(`DOMContentLoaded`, async (event) => {
         const start = performance.now();
 
-        await get_server_log();
-        setInterval(get_server_log, 5000);
+        var coll = document.getElementsByClassName("collapsible");
+        var i;
 
-        // fetch("db.log").then(response => response.text()).then(responseText => {
-        //     const db_log_dom_elm = document.getElementById(`db_log`);
-        //     db_log_dom_elm.innerText = ``;
-        //     db_log_dom_elm.innerText += responseText;
-        // });
+        for (i = 0; i < coll.length; i++) {
+            coll[i].addEventListener("click", function () {
+                this.classList.toggle("active");
+                var content = this.nextElementSibling;
+                if (content.style.display === "block") {
+                    content.style.display = "none";
+                } else {
+                    content.style.display = "block";
+                }
+            });
+        }
+
+        await get_server_log();
+        await get_db_log();
+        setInterval(get_server_log, 5000);
+        setInterval(get_db_log, 5000);
+
         const end = performance.now();
         console.log(`[script.js] >> ${event.type} <<\n\tExecution time: ${Math.round(end - start)}ms`);
     });
@@ -112,6 +166,58 @@
                 server_log_dom_elm.innerHTML = dom_elms;
             })
             .catch(e => server_log_dom_elm.innerHTML = `Error: ${e}`);
+    }
+
+
+    async function get_db_log() {
+        await fetch("db.log")
+            .then(response => {
+                if (response.ok) {
+                    return response.text();
+                } else {
+                    throw "db.log is empty . . .";
+                }
+            })
+            .then(responseText => {
+                const db_log_dom_elm = document.getElementById(`db_log`);
+                db_log_dom_elm.innerHTML = ``;
+
+                let top_1000_log_entries =
+                    responseText.split(`\n`).reverse().slice(0, 1001);
+
+                let dom_elms = "<table>";
+
+                let i = 0;
+                top_1000_log_entries.forEach(log_entry => {
+                    if (i == 0) {
+                        i++;
+                        dom_elms += `
+                            <tr>
+                               <th>#</th>
+                               <th>Timestamp</th>
+                               <th>Log Level</th>
+                               <th>Log Type</th>
+                               <th>Socket Address / Exit Code</th>
+                               <th>Command Issued / Response</th>
+                            </tr>
+                        `;
+                        return;
+                    }
+
+                    dom_elms += `<tr><td>${i++}</td>`;
+
+                    log_entry.split("] [").forEach(split_log_entry => {
+                        dom_elms += (`<td>${split_log_entry.replace("[", "").replace("]", "")}</td>`);
+                    });
+
+                    dom_elms += "</tr>";
+                });
+
+                dom_elms += "</table>"
+
+                db_log_dom_elm.innerHTML = dom_elms;
+            })
+            .catch(e => db_log_dom_elm.innerHTML = `Error: ${e}`);
     }
 </script>
 
