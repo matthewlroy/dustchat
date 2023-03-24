@@ -5,16 +5,32 @@
     <title>Admin Portal | DustChat</title>
 
     <style>
-        .column {
-            float: left;
-            width: 50%;
+        table {
+            font-family: Arial, Helvetica, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
         }
 
-        /* Clear floats after the columns */
-        .row:after {
-            content: "";
-            display: table;
-            clear: both;
+        td,
+        th {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        table tr:hover {
+            background-color: #ddd;
+        }
+
+        table th {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            text-align: left;
+            background-color: rgba(170, 0, 0, 1.0);
+            color: white;
         }
     </style>
 </head>
@@ -22,29 +38,81 @@
 <body>
     <h1>Admin Portal</h1>
 
-    <div id="log_container" class="row">
-        <h2>server.log | db.log</h2>
-        <div id="server_log" class="column"></div>
-        <div id="db_log" class="column"></div>
+    <div id="log_container">
+        <h2>server.log</h2>
+        <div id="server_log"></div>
     </div>
 </body>
 
 <script>
     window.addEventListener(`DOMContentLoaded`, async (event) => {
-        console.log("hello world!");
+        const start = performance.now();
 
-        fetch("server.log").then(response => response.text()).then(responseText => {
-            const server_log_dom_elm = document.getElementById(`server_log`);
-            server_log_dom_elm.innerText = ``;
-            server_log_dom_elm.innerText += responseText;
-        });
+        await get_server_log();
+        setInterval(get_server_log, 5000);
 
-        fetch("db.log").then(response => response.text()).then(responseText => {
-            const db_log_dom_elm = document.getElementById(`db_log`);
-            db_log_dom_elm.innerText = ``;
-            db_log_dom_elm.innerText += responseText;
-        });
+        // fetch("db.log").then(response => response.text()).then(responseText => {
+        //     const db_log_dom_elm = document.getElementById(`db_log`);
+        //     db_log_dom_elm.innerText = ``;
+        //     db_log_dom_elm.innerText += responseText;
+        // });
+        const end = performance.now();
+        console.log(`[script.js] >> ${event.type} <<\n\tExecution time: ${Math.round(end - start)}ms`);
     });
+
+    async function get_server_log() {
+        await fetch("server.log")
+            .then(response => {
+                if (response.ok) {
+                    return response.text();
+                } else {
+                    throw "server.log is empty . . .";
+                }
+            })
+            .then(responseText => {
+                const server_log_dom_elm = document.getElementById(`server_log`);
+                server_log_dom_elm.innerHTML = ``;
+
+                let top_1000_log_entries =
+                    responseText.split(`\n`).reverse().slice(0, 1001);
+
+                let dom_elms = "<table>";
+
+                let i = 0;
+                top_1000_log_entries.forEach(log_entry => {
+                    if (i == 0) {
+                        i++;
+                        dom_elms += `
+                            <tr>
+                               <th>#</th>
+                               <th>Timestamp</th>
+                               <th>Log Level</th>
+                               <th>Log Type</th>
+                               <th>Originating IP Address</th>
+                               <th>API Called / Response Status</th>
+                               <th>REST Method / Response Body</th>
+                               <th>Payload Size (in bytes)</th>
+                               <th>Request Body</th>
+                            </tr>
+                        `;
+                        return;
+                    }
+
+                    dom_elms += `<tr><td>${i++}</td>`;
+
+                    log_entry.split("] [").forEach(split_log_entry => {
+                        dom_elms += (`<td>${split_log_entry.replace("[", "").replace("]", "")}</td>`);
+                    });
+
+                    dom_elms += "</tr>";
+                });
+
+                dom_elms += "</table>"
+
+                server_log_dom_elm.innerHTML = dom_elms;
+            })
+            .catch(e => server_log_dom_elm.innerHTML = `Error: ${e}`);
+    }
 </script>
 
 </html>
