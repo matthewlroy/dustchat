@@ -26,6 +26,10 @@ input {
     visibility: hidden;
 }
 
+[d_region_hidden="false"] {
+    visibility: visible;
+}
+
 [aria-invalid="true"] {
     outline: 2px solid red;
 }

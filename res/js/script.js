@@ -38,6 +38,7 @@ window.addEventListener(`DOMContentLoaded`, async (event) => {
 
   // Establish event listeners on necessary DOM elements
   activate_create_account_form();
+  activate_region_toggle_buttons();
 
   // Hide loaders and show content
   document.getElementById(`loading_overlay`).hidden = true;
@@ -137,6 +138,21 @@ async function post_create_user(
     enable_form_no_delay(form_dom_elm, initial_submit_btn_txt, initial_submit_btn_aria_label);
     focus_on_first_invalid_input_in_form(form_dom_elm);
   }
+}
+//#endregion
+
+//#region DOM ELEMENT EVENT LISTENERS
+function activate_region_toggle_buttons() {
+  document.querySelectorAll(`button[d_for_region]`).forEach(btn => {
+    btn.addEventListener(`click`, (e) => {
+      const btn_dom_elm = e.target;
+      const region_target_dom_elm = document.getElementById(btn_dom_elm.getAttribute(`d_for_region`));
+
+      console.log(region_target_dom_elm);
+
+      region_target_dom_elm.toggleAttribute(`hidden`);
+    });
+  });
 }
 //#endregion
 
