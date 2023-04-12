@@ -2,6 +2,7 @@
     --theme-color: 170, 0, 0;
     --txt-color: #FFF;
     --font-families: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --off-white-color: 222, 222, 222;
 }
 
 body {
@@ -22,19 +23,19 @@ input {
     color: red;
 }
 
-[d_region_hidden="true"] {
-    visibility: hidden;
-}
-
-[d_region_hidden="false"] {
-    visibility: visible;
-}
-
 [aria-invalid="true"] {
     outline: 2px solid red;
 }
 
 [aria-invalid="true"]+.form_error_message {
+    visibility: visible;
+}
+
+[aria-hidden="true"] {
+    visibility: hidden;
+}
+
+[aria-hidden="false"] {
     visibility: visible;
 }
 
@@ -61,6 +62,46 @@ input {
     left: 50%;
     margin-top: -40px;
     margin-left: -40px;
+}
+
+hr {
+    border: none;
+    height: 1px;
+    color: rgb(var(--theme-color));
+    background-color: rgb(var(--theme-color));
+}
+
+h3 {
+    margin-top: 0;
+}
+
+.row {
+    display: block;
+}
+
+.col_200,
+.col_remaining {
+    display: inline-block;
+    vertical-align: top;
+}
+
+.nav_item {
+    display: block;
+    margin-bottom: 0.75em;
+    height: 3em;
+    width: 100%;
+    text-align: left;
+}
+
+.nav_item:last-child {
+    margin-bottom: 0;
+}
+
+.col_200 {
+    width: 200px;
+    padding-right: 1em;
+    margin-right: 1em;
+    border-right: 1px solid rgb(var(--theme-color));
 }
 
 @keyframes spin {

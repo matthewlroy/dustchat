@@ -38,7 +38,7 @@ window.addEventListener(`DOMContentLoaded`, async (event) => {
 
   // Establish event listeners on necessary DOM elements
   activate_create_account_form();
-  activate_region_toggle_buttons();
+  activate_data_toggle_btns();
 
   // Hide loaders and show content
   document.getElementById(`loading_overlay`).hidden = true;
@@ -142,15 +142,13 @@ async function post_create_user(
 //#endregion
 
 //#region DOM ELEMENT EVENT LISTENERS
-function activate_region_toggle_buttons() {
-  document.querySelectorAll(`button[d_for_region]`).forEach(btn => {
+function activate_data_toggle_btns() {
+  document.querySelectorAll(`button[data-toggle]`).forEach(btn => {
     btn.addEventListener(`click`, (e) => {
       const btn_dom_elm = e.target;
-      const region_target_dom_elm = document.getElementById(btn_dom_elm.getAttribute(`d_for_region`));
+      const region_target_dom_elm = document.getElementById(btn_dom_elm.getAttribute(`data-target`));
 
-      console.log(region_target_dom_elm);
-
-      region_target_dom_elm.toggleAttribute(`hidden`);
+      region_target_dom_elm.getAttribute(`aria-hidden`) === `true` ? region_target_dom_elm.setAttribute(`aria-hidden`, `false`) : region_target_dom_elm.setAttribute(`aria-hidden`, `true`);
     });
   });
 }
