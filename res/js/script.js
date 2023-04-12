@@ -39,7 +39,10 @@ window.addEventListener(`DOMContentLoaded`, async (event) => {
   // Establish event listeners on necessary DOM elements
   activate_create_account_form();
   activate_data_toggle_btns();
+
+  // FIXME: temp
   await get_server_log();
+  await get_db_log();
 
   // Hide loaders and show content
   document.getElementById(`loading_overlay`).hidden = true;
@@ -141,29 +144,30 @@ async function post_create_user(
   }
 }
 
+// FIXME: TEMP
 async function get_server_log() {
   await fetch("server.log")
-      .then(response => {
-          if (response.ok) {
-              return response.text();
-          } else {
-              throw "server.log is empty . . .";
-          }
-      })
-      .then(responseText => {
-          const server_log_dom_elm = document.getElementById(`server_log`);
-          server_log_dom_elm.innerHTML = ``;
+    .then(response => {
+      if (response.ok) {
+        return response.text();
+      } else {
+        throw "server.log is empty . . .";
+      }
+    })
+    .then(responseText => {
+      const server_log_dom_elm = document.getElementById(`server_log`);
+      server_log_dom_elm.innerHTML = ``;
 
-          let top_1000_log_entries =
-              responseText.split(`\n`).reverse().slice(0, 1001);
+      let top_1000_log_entries =
+        responseText.split(`\n`).reverse().slice(0, 1001);
 
-          let dom_elms = `<table>`;
+      let dom_elms = `<table>`;
 
-          let i = 0;
-          top_1000_log_entries.forEach(log_entry => {
-              if (i == 0) {
-                  i++;
-                  dom_elms += `
+      let i = 0;
+      top_1000_log_entries.forEach(log_entry => {
+        if (i == 0) {
+          i++;
+          dom_elms += `
                   <tr>
                      <th>#</th>
                      <th>Timestamp</th>
@@ -176,23 +180,75 @@ async function get_server_log() {
                      <th>Request Body</th>
                   </tr>
               `;
-                  return;
-              }
+          return;
+        }
 
-              dom_elms += `<tr><td>${i++}</td>`;
+        dom_elms += `<tr><td>${i++}</td>`;
 
-              log_entry.split("] [").forEach(split_log_entry => {
-                  dom_elms += (`<td>${split_log_entry.replace("[", "").replace("]", "")}</td>`);
-              });
+        log_entry.split("] [").forEach(split_log_entry => {
+          dom_elms += (`<td>${split_log_entry.replace("[", "").replace("]", "")}</td>`);
+        });
 
-              dom_elms += "</tr>";
-          });
+        dom_elms += "</tr>";
+      });
 
-          dom_elms += "</table>"
+      dom_elms += "</table>"
 
-          server_log_dom_elm.innerHTML = dom_elms;
-      })
-      .catch(e => server_log_dom_elm.innerHTML = `Error: ${e}`);
+      server_log_dom_elm.innerHTML = dom_elms;
+    })
+    .catch(e => server_log_dom_elm.innerHTML = `Error: ${e}`);
+}
+
+// FIXME: TEMP
+async function get_db_log() {
+  await fetch("db.log")
+    .then(response => {
+      if (response.ok) {
+        return response.text();
+      } else {
+        throw "db.log is empty . . .";
+      }
+    })
+    .then(responseText => {
+      const db_log_dom_elm = document.getElementById(`db_log`);
+      db_log_dom_elm.innerHTML = ``;
+
+      let top_1000_log_entries =
+        responseText.split(`\n`).reverse().slice(0, 1001);
+
+      let dom_elms = "<table>";
+
+      let i = 0;
+      top_1000_log_entries.forEach(log_entry => {
+        if (i == 0) {
+          i++;
+          dom_elms += `
+                  <tr>
+                     <th>#</th>
+                     <th>Timestamp</th>
+                     <th>Log Level</th>
+                     <th>Log Type</th>
+                     <th>Socket Address / Exit Code</th>
+                     <th>Command Issued / Response</th>
+                  </tr>
+              `;
+          return;
+        }
+
+        dom_elms += `<tr><td>${i++}</td>`;
+
+        log_entry.split("] [").forEach(split_log_entry => {
+          dom_elms += (`<td>${split_log_entry.replace("[", "").replace("]", "")}</td>`);
+        });
+
+        dom_elms += "</tr>";
+      });
+
+      dom_elms += "</table>"
+
+      db_log_dom_elm.innerHTML = dom_elms;
+    })
+    .catch(e => db_log_dom_elm.innerHTML = `Error: ${e}`);
 }
 //#endregion
 

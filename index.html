@@ -24,7 +24,7 @@
                     <button class="nav_item" data-toggle="nav_tab" data-target="create_account_region">Create
                         Account</button>
                     <button class="nav_item" data-toggle="nav_tab" data-target="server_log_region">Server Log</button>
-                    <button class="nav_item">Database Log</button>
+                    <button class="nav_item" data-toggle="nav_tab" data-target="db_log_region">Database Log</button>
                 </div>
 
                 <div class="col_remaining nav_region" id="create_account_region" role="region"
@@ -59,78 +59,18 @@
                     <h3 id="server_log_region_heading">Server Log</h3>
                     <div id="server_log"></div>
                 </div>
+
+                <div class="col_remaining nav_region" id="db_log_region" role="region"
+                    aria-labelledby="db_log_region_heading" aria-live="polite" aria-hidden="true">
+                    <h3 id="db_log_region_heading">Server Log</h3>
+                    <div id="db_log"></div>
+                </div>
             </div>
 
         </main>
     </div>
 
     <script src="/res/js/script.js"></script>
-    <!-- <script>
-        window.addEventListener(`DOMContentLoaded`, async (event) => {
-            const start = performance.now();
-
-            await get_server_log();
-            await get_db_log();
-            setInterval(get_server_log, 5000);
-            setInterval(get_db_log, 5000);
-
-            const end = performance.now();
-            console.log(`[script.js] >> ${event.type} <<\n\tExecution time: ${Math.round(end - start)}ms`);
-        });
-
-        
-
-        async function get_db_log() {
-            await fetch("db.log")
-                .then(response => {
-                    if (response.ok) {
-                        return response.text();
-                    } else {
-                        throw "db.log is empty . . .";
-                    }
-                })
-                .then(responseText => {
-                    const db_log_dom_elm = document.getElementById(`db_log`);
-                    db_log_dom_elm.innerHTML = ``;
-
-                    let top_1000_log_entries =
-                        responseText.split(`\n`).reverse().slice(0, 1001);
-
-                    let dom_elms = "<table>";
-
-                    let i = 0;
-                    top_1000_log_entries.forEach(log_entry => {
-                        if (i == 0) {
-                            i++;
-                            dom_elms += `
-                            <tr>
-                               <th>#</th>
-                               <th>Timestamp</th>
-                               <th>Log Level</th>
-                               <th>Log Type</th>
-                               <th>Socket Address / Exit Code</th>
-                               <th>Command Issued / Response</th>
-                            </tr>
-                        `;
-                            return;
-                        }
-
-                        dom_elms += `<tr><td>${i++}</td>`;
-
-                        log_entry.split("] [").forEach(split_log_entry => {
-                            dom_elms += (`<td>${split_log_entry.replace("[", "").replace("]", "")}</td>`);
-                        });
-
-                        dom_elms += "</tr>";
-                    });
-
-                    dom_elms += "</table>"
-
-                    db_log_dom_elm.innerHTML = dom_elms;
-                })
-                .catch(e => db_log_dom_elm.innerHTML = `Error: ${e}`);
-        }
-    </script> -->
 </body>
 
 </html>
