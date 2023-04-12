@@ -23,11 +23,11 @@
                 <div class="col_200" role="navigation">
                     <button class="nav_item" data-toggle="nav_tab" data-target="create_account_region">Create
                         Account</button>
-                    <button class="nav_item">Server Log</button>
+                    <button class="nav_item" data-toggle="nav_tab" data-target="server_log_region">Server Log</button>
                     <button class="nav_item">Database Log</button>
                 </div>
 
-                <div class="col_remaining" id="create_account_region" role="region"
+                <div class="col_remaining nav_region" id="create_account_region" role="region"
                     aria-labelledby="create_account_region_heading" aria-live="polite" aria-hidden="true">
                     <h3 id="create_account_region_heading">Create Account</h3>
                     <form id="create_account_form">
@@ -53,16 +53,14 @@
                             later.</span>
                     </form>
                 </div>
+
+                <div class="col_remaining nav_region" id="server_log_region" role="region"
+                    aria-labelledby="server_log_region_heading" aria-live="polite" aria-hidden="true">
+                    <h3 id="server_log_region_heading">Server Log</h3>
+                    <div id="server_log"></div>
+                </div>
             </div>
 
-            <!-- 
-            <div id="logging_region" role="region" aria-hidden="true" aria-labelledby="logging_region_heading">
-                <h3 id="logging_region_heading">Logging</h3>
-                <div id="log_container">
-                    <div id="server_log"></div>
-                    <div id="db_log"></div>
-                </div>
-            </div> -->
         </main>
     </div>
 

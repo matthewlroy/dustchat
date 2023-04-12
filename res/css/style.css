@@ -32,6 +32,7 @@ input {
 }
 
 [aria-hidden="true"] {
+    display: none !important;
     visibility: hidden;
 }
 

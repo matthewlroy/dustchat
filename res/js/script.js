@@ -148,7 +148,14 @@ function activate_data_toggle_btns() {
       const btn_dom_elm = e.target;
       const region_target_dom_elm = document.getElementById(btn_dom_elm.getAttribute(`data-target`));
 
-      region_target_dom_elm.getAttribute(`aria-hidden`) === `true` ? region_target_dom_elm.setAttribute(`aria-hidden`, `false`) : region_target_dom_elm.setAttribute(`aria-hidden`, `true`);
+      // Hide other regions
+      document.querySelectorAll(`div.nav_region`).forEach(reg => {
+        if (reg == region_target_dom_elm) return;
+        reg.setAttribute(`aria-hidden`, `true`);
+      });
+
+      // Show the clicked region
+      region_target_dom_elm.setAttribute(`aria-hidden`, `false`);
     });
   });
 }
