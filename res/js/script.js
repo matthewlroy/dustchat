@@ -39,6 +39,7 @@ window.addEventListener(`DOMContentLoaded`, async (event) => {
   // Establish event listeners on necessary DOM elements
   activate_create_account_form();
   activate_data_toggle_btns();
+  await get_server_log();
 
   // Hide loaders and show content
   document.getElementById(`loading_overlay`).hidden = true;
@@ -138,6 +139,60 @@ async function post_create_user(
     enable_form_no_delay(form_dom_elm, initial_submit_btn_txt, initial_submit_btn_aria_label);
     focus_on_first_invalid_input_in_form(form_dom_elm);
   }
+}
+
+async function get_server_log() {
+  await fetch("server.log")
+      .then(response => {
+          if (response.ok) {
+              return response.text();
+          } else {
+              throw "server.log is empty . . .";
+          }
+      })
+      .then(responseText => {
+          const server_log_dom_elm = document.getElementById(`server_log`);
+          server_log_dom_elm.innerHTML = ``;
+
+          let top_1000_log_entries =
+              responseText.split(`\n`).reverse().slice(0, 1001);
+
+          let dom_elms = `<table>`;
+
+          let i = 0;
+          top_1000_log_entries.forEach(log_entry => {
+              if (i == 0) {
+                  i++;
+                  dom_elms += `
+                  <tr>
+                     <th>#</th>
+                     <th>Timestamp</th>
+                     <th>Log Level</th>
+                     <th>Log Type</th>
+                     <th>Originating IP Address</th>
+                     <th>API Called / Response Status</th>
+                     <th>REST Method / Response Body</th>
+                     <th>Payload Size (in bytes)</th>
+                     <th>Request Body</th>
+                  </tr>
+              `;
+                  return;
+              }
+
+              dom_elms += `<tr><td>${i++}</td>`;
+
+              log_entry.split("] [").forEach(split_log_entry => {
+                  dom_elms += (`<td>${split_log_entry.replace("[", "").replace("]", "")}</td>`);
+              });
+
+              dom_elms += "</tr>";
+          });
+
+          dom_elms += "</table>"
+
+          server_log_dom_elm.innerHTML = dom_elms;
+      })
+      .catch(e => server_log_dom_elm.innerHTML = `Error: ${e}`);
 }
 //#endregion
 
