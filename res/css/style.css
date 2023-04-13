@@ -132,6 +132,11 @@ tr:nth-child(4n) {
     margin-bottom: 0;
 }
 
+.nav_item.active {
+    background-color: rgb(var(--theme-color));
+    color: var(--txt-color);
+}
+
 @keyframes spin {
     0% {
         transform: rotate(0deg);

@@ -158,13 +158,13 @@ async function get_server_log() {
       const server_log_dom_elm = document.getElementById(`server_log`);
       server_log_dom_elm.innerHTML = ``;
 
-      let top_1000_log_entries =
-        responseText.split(`\n`).reverse().slice(0, 1001);
+      let top_250_log_entries =
+        responseText.split(`\n`).reverse().slice(0, 251);
 
       let dom_elms = `<table>`;
 
       let i = 0;
-      top_1000_log_entries.forEach(log_entry => {
+      top_250_log_entries.forEach(log_entry => {
         if (i == 0) {
           i++;
           dom_elms += `
@@ -213,13 +213,13 @@ async function get_db_log() {
       const db_log_dom_elm = document.getElementById(`db_log`);
       db_log_dom_elm.innerHTML = ``;
 
-      let top_1000_log_entries =
-        responseText.split(`\n`).reverse().slice(0, 1001);
+      let top_250_log_entries =
+        responseText.split(`\n`).reverse().slice(0, 251);
 
       let dom_elms = "<table>";
 
       let i = 0;
-      top_1000_log_entries.forEach(log_entry => {
+      top_250_log_entries.forEach(log_entry => {
         if (i == 0) {
           i++;
           dom_elms += `
@@ -266,7 +266,13 @@ function activate_data_toggle_btns() {
         reg.setAttribute(`aria-hidden`, `true`);
       });
 
+      // Remove other active buttons
+      document.querySelectorAll(`button[data-toggle]`).forEach(active_btn => {
+        active_btn.classList.remove(`active`);
+      });
+
       // Show the clicked region
+      btn_dom_elm.classList.add(`active`);
       region_target_dom_elm.setAttribute(`aria-hidden`, `false`);
     });
   });
