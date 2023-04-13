@@ -5,9 +5,28 @@
     --off-white-color: 222, 222, 222;
 }
 
+html,
 body {
-    overflow-y: scroll;
+    height: 100%;
     font-family: var(--font-families);
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+}
+
+.col {
+  flex: 1;
+  padding-left: 1em;
+}
+
+#admin_actions_nav {
+    max-width: 200px;
+    padding-right: 1em;
+    padding-left: 0;
+    border-right: 1px solid rgb(var(--theme-color));
 }
 
 input {
@@ -86,42 +105,20 @@ td {
 th {
     background-color: rgb(var(--theme-color));
     color: var(--txt-color);
-}
-
-th {
     font-size: 7.25pt;
+    border: 1px solid white;
 }
 
 td {
     font-size: 6.25pt;
+    word-break: break-all;
+    max-width: 250px;
 }
 
 tr:nth-child(4n + 1),
 tr:nth-child(4n) {
     background: rgb(var(--off-white-color));
 }
-
-.row {
-    display: block;
-    width: 100%;
-}
-
-.col_200,
-.col_remaining {
-    display: table-cell;
-    vertical-align: top;
-}
-
-.col_remaining {
-    padding-left: 1em;
-}
-
-.col_200 {
-    width: 200px;
-    padding-right: 1em;
-    border-right: 1px solid rgb(var(--theme-color));
-}
-
 
 .nav_item {
     display: block;

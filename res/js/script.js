@@ -230,6 +230,7 @@ async function get_db_log() {
                      <th>Log Type</th>
                      <th>Socket Address / Exit Code</th>
                      <th>Command Issued / Response</th>
+                     <th>Payload Size (in bytes)</th>
                   </tr>
               `;
           return;

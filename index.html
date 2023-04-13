@@ -20,50 +20,54 @@
             <h2 id="admin_actions_heading">Admin Actions</h2>
 
             <div class="row">
-                <div class="col_200" role="navigation">
+                <div id="admin_actions_nav" class="col" role="navigation">
                     <button class="nav_item" data-toggle="nav_tab" data-target="create_account_region">Create
                         Account</button>
-                    <button class="nav_item" data-toggle="nav_tab" data-target="server_log_region">Server Log</button>
+                    <button class="nav_item" data-toggle="nav_tab" data-target="server_log_region">Server
+                        Log</button>
                     <button class="nav_item" data-toggle="nav_tab" data-target="db_log_region">Database Log</button>
                 </div>
 
-                <div class="col_remaining nav_region" id="create_account_region" role="region"
-                    aria-labelledby="create_account_region_heading" aria-live="polite" aria-hidden="true">
-                    <h3 id="create_account_region_heading">Create Account</h3>
-                    <form id="create_account_form">
-                        <input id="email" autocomplete="email" name="email" aria-required="true" placeholder="Email *"
-                            type="email" required aria-label="Enter your email address" aria-invalid="false"
-                            aria-errormessage="email_error" maxlength="255">
-                        <span id="email_error" class="form_error_message">Please enter a valid email
-                            address.</span>
+                <div class="col">
+                    <div class="nav_region" id="create_account_region" role="region"
+                        aria-labelledby="create_account_region_heading" aria-live="polite" aria-hidden="true">
+                        <h3 id="create_account_region_heading">Create Account</h3>
+                        <form id="create_account_form">
+                            <input id="email" autocomplete="email" name="email" aria-required="true"
+                                placeholder="Email *" type="email" required aria-label="Enter your email address"
+                                aria-invalid="false" aria-errormessage="email_error" maxlength="255">
+                            <span id="email_error" class="form_error_message">Please enter a valid email
+                                address.</span>
 
-                        <input id="password" autocomplete="new-password" name="password" aria-required="true"
-                            type="password" placeholder="Password *" required aria-label="Enter a new password"
-                            aria-invalid="false" aria-errormessage="password_error" maxlength="255" minlength="8">
-                        <span id="password_error" class="form_error_message">Please enter a valid password of at
-                            least 8 characters.</span>
+                            <input id="password" autocomplete="new-password" name="password" aria-required="true"
+                                type="password" placeholder="Password *" required aria-label="Enter a new password"
+                                aria-invalid="false" aria-errormessage="password_error" maxlength="255" minlength="8">
+                            <span id="password_error" class="form_error_message">Please enter a valid password of at
+                                least 8 characters.</span>
 
-                        <input type="submit" formenctype="multipart/form-data" role="button" form="create_account_form"
-                            aria-label="Submit create account form" id="create_account_submit_btn"
-                            value="Create Account" aria-live="polite">
+                            <input type="submit" formenctype="multipart/form-data" role="button"
+                                form="create_account_form" aria-label="Submit create account form"
+                                id="create_account_submit_btn" value="Create Account" aria-live="polite">
 
-                        <input type="hidden" aria-hidden="true" id="server" aria-errormessage="server_error"
-                            aria-invalid="false">
-                        <span id="server_error" class="form_error_message">Something went wrong, please try again
-                            later.</span>
-                    </form>
-                </div>
+                            <input type="hidden" aria-hidden="true" id="server" aria-errormessage="server_error"
+                                aria-invalid="false">
+                            <span id="server_error" class="form_error_message">Something went wrong, please try
+                                again
+                                later.</span>
+                        </form>
+                    </div>
 
-                <div class="col_remaining nav_region" id="server_log_region" role="region"
-                    aria-labelledby="server_log_region_heading" aria-live="polite" aria-hidden="true">
-                    <h3 id="server_log_region_heading">Server Log</h3>
-                    <div id="server_log"></div>
-                </div>
+                    <div class="nav_region" id="server_log_region" role="region"
+                        aria-labelledby="server_log_region_heading" aria-live="polite" aria-hidden="true">
+                        <h3 id="server_log_region_heading">Server Log</h3>
+                        <div id="server_log"></div>
+                    </div>
 
-                <div class="col_remaining nav_region" id="db_log_region" role="region"
-                    aria-labelledby="db_log_region_heading" aria-live="polite" aria-hidden="true">
-                    <h3 id="db_log_region_heading">Server Log</h3>
-                    <div id="db_log"></div>
+                    <div class="nav_region" id="db_log_region" role="region" aria-labelledby="db_log_region_heading"
+                        aria-live="polite" aria-hidden="true">
+                        <h3 id="db_log_region_heading">Database Log</h3>
+                        <div id="db_log"></div>
+                    </div>
                 </div>
             </div>
 
