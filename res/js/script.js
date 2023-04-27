@@ -7,6 +7,8 @@ const DEFAULT_FETCH_TIMEOUT = {
 const FIELD_MAX_LENGTH = 255;
 
 const FORM_SPAM_DELAY_SEC = 1;
+
+const GENERIC_ERR_MSG = `Something went wrong, please try again later.`;
 //#endregion
 
 //#region GLOBAL HELPERS
@@ -125,12 +127,25 @@ async function post_create_user(
       // TODO: Finish the OKAY response + redirect
       console.log("200! Posted successfully!");
     } else {
+
+      // User already exists error
+      if (response.status == 409) {
+        const response_json = await response.json();
+
+        // Show the invalid field + re-enable form
+        toggle_invalid_on_single_input(true, document.getElementById(response_json.error_field), response_json.error_message);
+        enable_form_no_delay(form_dom_elm, initial_submit_btn_txt, initial_submit_btn_aria_label);
+        focus_on_first_invalid_input_in_form(form_dom_elm);
+
+        return;
+      }
+
+      // Unknown Error
       // Our API is guaranteed to return JSON on error, display to console
       const response_json = await response.json();
-      console.error(response_json.error_message);
 
       // Show the invalid field + re-enable form
-      toggle_invalid_on_single_input(true, document.getElementById(response_json.error_field));
+      toggle_invalid_on_single_input(true, document.getElementById(response_json.error_field), response_json.error_message);
       enable_form_no_delay(form_dom_elm, initial_submit_btn_txt, initial_submit_btn_aria_label);
       focus_on_first_invalid_input_in_form(form_dom_elm);
     }
@@ -138,7 +153,7 @@ async function post_create_user(
     console.error(error);
 
     // Unknown error, re-enable form
-    toggle_invalid_on_single_input(true, form_dom_elm.querySelector(`input[type="hidden"]`));
+    toggle_invalid_on_single_input(true, form_dom_elm.querySelector(`input[type="hidden"]`), GENERIC_ERR_MSG);
     enable_form_no_delay(form_dom_elm, initial_submit_btn_txt, initial_submit_btn_aria_label);
     focus_on_first_invalid_input_in_form(form_dom_elm);
   }
@@ -307,19 +322,19 @@ function activate_create_account_form() {
     // Validate (client-side) against the submitted data
     // DATA object validation (ensuring no null data got in here somehow)
     if (is_empty(data) || data == null) {
-      toggle_invalid_on_single_input(true, hidden_server_err_input);
+      toggle_invalid_on_single_input(true, hidden_server_err_input, GENERIC_ERR_MSG);
     }
 
     // EMAIL validation (simple check for the @ sign existing)
     const email = data.email;
     if (!email || email.indexOf(`@`) == -1 || email.length > FIELD_MAX_LENGTH) {
-      toggle_invalid_on_single_input(true, email_input);
+      toggle_invalid_on_single_input(true, email_input, `Please enter a valid email address.`);
     }
 
     // PASSWORD validation (at least 8 characters in the password)
     const password = data.password;
     if (!password || password.length < 8 || password.length > FIELD_MAX_LENGTH) {
-      toggle_invalid_on_single_input(true, password_input);
+      toggle_invalid_on_single_input(true, password_input, `Please enter a valid password of at least 8 characters.`);
     }
 
     // Exit out at this point, if anything is invalid
@@ -418,12 +433,14 @@ function enable_form_no_delay(
 
 function clear_invalid_on_all_form_inputs(form_dom_elm) {
   form_dom_elm.querySelectorAll(`input`).forEach(inputElm =>
-    toggle_invalid_on_single_input(false, inputElm)
+    toggle_invalid_on_single_input(false, inputElm, ``)
   );
 }
 
-function toggle_invalid_on_single_input(invalid_bool, input_dom_elm) {
+function toggle_invalid_on_single_input(invalid_bool, input_dom_elm, err_message) {
   input_dom_elm.setAttribute(`aria-invalid`, `${invalid_bool}`);
+  const err_msg_dom_elm = input_dom_elm.nextElementSibling;
+  err_msg_dom_elm.textContent = err_message;
 }
 
 function toggle_disable_on_all_form_inputs(disable_bool, form_dom_elm) {
